@@ -45,11 +45,16 @@ type FormValuesProps = {
   code6: string;
 };
 
+type TServices = {
+  _id: string;
+  name: string;
+};
+
 function WebhookURL() {
   const { user, initialize } = useAuthContext();
   const isDesktop = useResponsive("up", "md");
   const [isDelete, setIsDelete] = useState("");
-  const [services, setServices] = useState<any[]>([]);
+  const [services, setServices] = useState<TServices[]>([]);
   const [values, setValues] = useState({
     service: "",
     url: "",
@@ -94,21 +99,19 @@ function WebhookURL() {
   });
 
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await fetcher.get(END_POINTS.PLAN.GET_PLAN_DETAIL);
-        const allServices: any[] = [];
-        response.data.categories?.forEach((cat: any) => {
-          allServices.push(...cat.services);
-        });
-        setServices(allServices);
-      } catch (error) {
-        setServices([]);
-      }
-    };
-
     fetchServices();
   }, []);
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetcher.get(END_POINTS.PLAN.GET_PLAN_DETAIL);
+      const allServices: TServices[] = [];
+      response.data.categories?.forEach((cat: any) => {
+        allServices.push(...cat.services);
+      });
+      setServices(allServices || []);
+    } catch (error) {}
+  };
 
   const {
     reset,
@@ -253,7 +256,7 @@ function WebhookURL() {
                 setValues({ ...values, service: e.target.value });
               }}
             >
-              {services.map((item: any) => (
+              {services.map((item) => (
                 <MenuItem key={item._id} value={item._id}>
                   {item.name}
                 </MenuItem>

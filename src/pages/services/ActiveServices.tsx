@@ -15,25 +15,32 @@ import fetcher from "../../api/fetcher";
 import { END_POINTS } from "../../api/EndPoints";
 import NoDataFound from "../../components/no-data/NoDataFound";
 
+type TServices = {
+  _id: string;
+  name: string;
+  description: string;
+  documentationUrl: string;
+};
+
 export default function ActiveServices() {
-  const [services, setServices] = useState<any[]>([]);
+  const [services, setServices] = useState<TServices[]>([]);
 
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await fetcher.get(END_POINTS.PLAN.GET_PLAN_DETAIL);
-        const allServices: any[] = [];
-        response.data.categories?.forEach((cat: any) => {
-          allServices.push(...cat.services);
-        });
-        setServices(allServices);
-      } catch (error) {
-        setServices([]);
-      }
-    };
-
     fetchServices();
   }, []);
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetcher.get(END_POINTS.PLAN.GET_PLAN_DETAIL);
+      const allServices: any[] = [];
+      response.data.categories?.forEach((cat: any) => {
+        allServices.push(...cat.services);
+      });
+      setServices(allServices);
+    } catch (error) {
+      setServices([]);
+    }
+  };
 
   if (!services.length) return null;
 
@@ -47,7 +54,6 @@ export default function ActiveServices() {
                 { id: 0, label: "Service Name" },
                 { id: 1, label: "Description" },
                 { id: 2, label: "Api Calls(used today)" },
-                { id: 3, label: "Version" },
                 { id: 4, label: "Action" },
               ].map((item) => (
                 <TableCell key={item.id}>
@@ -57,18 +63,19 @@ export default function ActiveServices() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {services.map((row: any) => (
+            {services.map((row) => (
               <TableRow
                 key={row._id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 hover
               >
                 <TableCell>
-                  <Typography noWrap variant="body2">{row.name}</Typography>
+                  <Typography noWrap variant="body2">
+                    {row.name}
+                  </Typography>
                 </TableCell>
                 <TableCell>{row.description}</TableCell>
                 <TableCell>0</TableCell>
-                <TableCell>v1</TableCell>
                 <TableCell>
                   <Button
                     variant="contained"
