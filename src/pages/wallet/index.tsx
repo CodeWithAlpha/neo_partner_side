@@ -114,8 +114,8 @@ export default function Wallet() {
   const isDesktop = useResponsive("up", "md");
   const [activeTab, setActiveTab] = useState("1");
   const [activeSubTab, setActiveSubTab] = useState<
-    "pending" | "approved" | "reject"
-  >("pending");
+    "all" | "pending" | "approved" | "reject"
+  >("all");
 
   // modal
   const [open, setOpen] = useState(false);
@@ -145,7 +145,7 @@ export default function Wallet() {
   const getRequests = async (
     page: number,
     limit: number,
-    status: "pending" | "approved" | "reject"
+    status: "all" | "pending" | "approved" | "reject"
   ) => {
     try {
       const Response = await fetcher.get(
@@ -215,6 +215,7 @@ export default function Wallet() {
           sx={{ mb: 0.5, ml: 1 }}
           scrollButtons={isDesktop ? "auto" : false}
         >
+          <Tab value="all" label="All" />
           <Tab value="pending" label="Pending" />
           <Tab value="approved" label="Approved" />
           <Tab value="reject" label="Rejected" />

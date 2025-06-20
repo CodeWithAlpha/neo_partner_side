@@ -68,7 +68,7 @@ export const END_POINTS = {
     GET_REQUESTS: (
       page: number,
       itemPerPage: number,
-      status: "pending" | "approved" | "reject"
+      status: "all" | "pending" | "approved" | "reject"
     ) => `fund-request/own?page=${page}&limit=${itemPerPage}&status=${status}`,
     GET_ADMIN_BANKS: "admin-bank?page=1&limit=100",
     GET_BANK_MODES: (bankId: string) => `admin-bank/commissions/${bankId}`,
