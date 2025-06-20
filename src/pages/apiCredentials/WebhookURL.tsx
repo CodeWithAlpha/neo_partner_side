@@ -21,7 +21,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useResponsive from "../../hooks/useResponsive";
 import { modalStyle } from "../../utils/cssStyles";
 
@@ -49,6 +49,7 @@ function WebhookURL() {
   const { user, initialize } = useAuthContext();
   const isDesktop = useResponsive("up", "md");
   const [isDelete, setIsDelete] = useState("");
+  const [services, setServices] = useState<any[]>([]);
   const [values, setValues] = useState({
     service: "",
     url: "",
@@ -91,6 +92,23 @@ function WebhookURL() {
     resolver: yupResolver(Schema),
     defaultValues,
   });
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetcher.get(END_POINTS.PLAN.GET_PLAN_DETAIL);
+        const allServices: any[] = [];
+        response.data.categories?.forEach((cat: any) => {
+          allServices.push(...cat.services);
+        });
+        setServices(allServices);
+      } catch (error) {
+        setServices([]);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   const {
     reset,
@@ -235,7 +253,7 @@ function WebhookURL() {
                 setValues({ ...values, service: e.target.value });
               }}
             >
-              {user?.allowedServices.map((item: any) => (
+              {services.map((item: any) => (
                 <MenuItem key={item._id} value={item._id}>
                   {item.name}
                 </MenuItem>
