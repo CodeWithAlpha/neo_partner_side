@@ -13,12 +13,38 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../auth/useAuthContext";
 import NoDataFound from "../components/no-data/NoDataFound";
+import fetcher from "../api/fetcher";
+import { END_POINTS } from "../api/EndPoints";
+
+type TServices = {
+  _id: string;
+  name: string;
+  description: string;
+  documentationUrl: string;
+};
 
 function ApiDocs() {
-  const { user } = useAuthContext();
+  const [services, setServices] = useState<TServices[]>([]);
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetcher.get(END_POINTS.PLAN.GET_PLAN_DETAIL);
+      const allServices: any[] = [];
+      response.data.categories?.forEach((cat: any) => {
+        allServices.push(...cat.services);
+      });
+      setServices(allServices);
+    } catch (error) {
+      setServices([]);
+    }
+  };
 
   return (
     <Grid2 container spacing={2} m={2}>
@@ -81,7 +107,7 @@ function ApiDocs() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {user?.allowedServices.map((row: any) => (
+                {services.map((row: any) => (
                   <TableRow
                     key={row._id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -107,7 +133,7 @@ function ApiDocs() {
                 ))}
               </TableBody>
             </Table>
-            <NoDataFound isDataFound={!!user?.allowedServices} />
+            <NoDataFound isDataFound={!!services?.length} />
           </TableContainer>
         </Card>
       </Grid2>
